@@ -12,7 +12,6 @@ import time
 
 import cv2
 
-
 CATEGORIES = ["recyclable", "compost", "landfill"]
 DATA_DIR = Path("data/raw")
 IMG_SIZE = (224, 224)
@@ -120,9 +119,7 @@ def main():
         "--category", choices=CATEGORIES + ["all"], default="all", help="Category to collect"
     )
     parser.add_argument("--num", type=int, default=30, help="Number of images per category")
-    parser.add_argument(
-        "--delay", type=float, default=1.0, help="Delay between captures (seconds)"
-    )
+    parser.add_argument("--delay", type=float, default=1.0, help="Delay between captures (seconds)")
     args = parser.parse_args()
 
     setup_directories()

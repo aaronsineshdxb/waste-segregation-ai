@@ -215,9 +215,7 @@ class WasteClassifier:
 
         # Phase 1: Train top layers only
         print("\n" + "=" * 60)
-        print(
-            f"PHASE 1: Training top layers (frozen base) - {self.config.epochs} epochs"
-        )
+        print(f"PHASE 1: Training top layers (frozen base) - {self.config.epochs} epochs")
         print("=" * 60)
 
         self.history = self.model.fit(
@@ -230,9 +228,7 @@ class WasteClassifier:
 
         # Phase 2: Fine-tuning
         print("\n" + "=" * 60)
-        print(
-            f"PHASE 2: Fine-tuning (unfreeze base) - {self.config.fine_tune_epochs} epochs"
-        )
+        print(f"PHASE 2: Fine-tuning (unfreeze base) - {self.config.fine_tune_epochs} epochs")
         print("=" * 60)
 
         # Unfreeze base model
@@ -354,12 +350,8 @@ class WasteClassifier:
         fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 
         # Accuracy
-        axes[0, 0].plot(
-            self.history.history["accuracy"], label="Train", alpha=0.8
-        )
-        axes[0, 0].plot(
-            self.history.history["val_accuracy"], label="Validation", alpha=0.8
-        )
+        axes[0, 0].plot(self.history.history["accuracy"], label="Train", alpha=0.8)
+        axes[0, 0].plot(self.history.history["val_accuracy"], label="Validation", alpha=0.8)
         axes[0, 0].axvline(
             x=self.config.epochs - 0.5,
             color="red",
@@ -389,15 +381,9 @@ class WasteClassifier:
 
         # Precision
         if "precision" in self.history.history:
-            axes[0, 2].plot(
-                self.history.history["precision"], label="Train", alpha=0.8
-            )
-            axes[0, 2].plot(
-                self.history.history["val_precision"], label="Validation", alpha=0.8
-            )
-            axes[0, 2].axvline(
-                x=self.config.epochs - 0.5, color="red", linestyle="--"
-            )
+            axes[0, 2].plot(self.history.history["precision"], label="Train", alpha=0.8)
+            axes[0, 2].plot(self.history.history["val_precision"], label="Validation", alpha=0.8)
+            axes[0, 2].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
             axes[0, 2].set_title("Precision")
             axes[0, 2].set_xlabel("Epoch")
             axes[0, 2].set_ylabel("Precision")
@@ -407,12 +393,8 @@ class WasteClassifier:
         # Recall
         if "recall" in self.history.history:
             axes[1, 0].plot(self.history.history["recall"], label="Train", alpha=0.8)
-            axes[1, 0].plot(
-                self.history.history["val_recall"], label="Validation", alpha=0.8
-            )
-            axes[1, 0].axvline(
-                x=self.config.epochs - 0.5, color="red", linestyle="--"
-            )
+            axes[1, 0].plot(self.history.history["val_recall"], label="Validation", alpha=0.8)
+            axes[1, 0].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
             axes[1, 0].set_title("Recall")
             axes[1, 0].set_xlabel("Epoch")
             axes[1, 0].set_ylabel("Recall")
@@ -422,12 +404,8 @@ class WasteClassifier:
         # AUC
         if "auc" in self.history.history:
             axes[1, 1].plot(self.history.history["auc"], label="Train", alpha=0.8)
-            axes[1, 1].plot(
-                self.history.history["val_auc"], label="Validation", alpha=0.8
-            )
-            axes[1, 1].axvline(
-                x=self.config.epochs - 0.5, color="red", linestyle="--"
-            )
+            axes[1, 1].plot(self.history.history["val_auc"], label="Validation", alpha=0.8)
+            axes[1, 1].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
             axes[1, 1].set_title("AUC")
             axes[1, 1].set_xlabel("Epoch")
             axes[1, 1].set_ylabel("AUC")
@@ -437,9 +415,7 @@ class WasteClassifier:
         # Learning rate (if available)
         if "lr" in self.history.history:
             axes[1, 2].plot(self.history.history["lr"], alpha=0.8)
-            axes[1, 2].axvline(
-                x=self.config.epochs - 0.5, color="red", linestyle="--"
-            )
+            axes[1, 2].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
             axes[1, 2].set_title("Learning Rate")
             axes[1, 2].set_xlabel("Epoch")
             axes[1, 2].set_ylabel("LR")
@@ -456,27 +432,19 @@ class WasteClassifier:
 
 def main():
     parser = argparse.ArgumentParser(description="Train waste classification model")
-    parser.add_argument(
-        "--config", default="config/training_config.yaml", help="Config file path"
-    )
+    parser.add_argument("--config", default="config/training_config.yaml", help="Config file path")
     parser.add_argument("--data-dir", default="data/raw", help="Data directory")
     parser.add_argument("--model-dir", default="models", help="Model output directory")
     parser.add_argument("--epochs", type=int, default=30, help="Initial training epochs")
-    parser.add_argument(
-        "--fine-tune-epochs", type=int, default=15, help="Fine-tuning epochs"
-    )
+    parser.add_argument("--fine-tune-epochs", type=int, default=15, help="Fine-tuning epochs")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
     parser.add_argument(
         "--base-model",
         default="MobileNetV2",
         choices=["MobileNetV2", "EfficientNetB0", "ResNet50"],
     )
-    parser.add_argument(
-        "--no-pretrained", action="store_true", help="Don't use ImageNet weights"
-    )
-    parser.add_argument(
-        "--eval-only", action="store_true", help="Only evaluate existing model"
-    )
+    parser.add_argument("--no-pretrained", action="store_true", help="Don't use ImageNet weights")
+    parser.add_argument("--eval-only", action="store_true", help="Only evaluate existing model")
     args = parser.parse_args()
 
     # Load config
