@@ -1,0 +1,58 @@
+name: "Feature Request"
+description: "Suggest a new feature or enhancement"
+title: "[FEAT] "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for suggesting a feature! Please describe it below."
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you'd like.
+      placeholder: "Add support for YOLO-based object detection to locate multiple waste items in one image..."
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Use Case
+      description: Why is this feature needed? What problem does it solve?
+      placeholder: "Currently the model classifies the whole image. With object detection, we could..."
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: Any thoughts on how to implement this?
+      placeholder: "Could use YOLOv8 with a custom dataset..."
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the project does this affect?
+      options:
+        - "Model/Training"
+        - "Data Collection"
+        - "Streamlit App (Prediction)"
+        - "Dashboard"
+        - "Documentation"
+        - "CI/CD"
+        - "Other"
+    validations:
+      required: true
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Willing to Contribute
+      description: Are you willing to help implement this?
+      options:
+        - label: "Yes, I can implement this"
+        - label: "I can help test"
+        - label: "I can help with documentation"
+        - label: "Just suggesting the idea"

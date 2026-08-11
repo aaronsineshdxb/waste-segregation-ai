@@ -1,0 +1,74 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files (large binary files)
+models/*.keras
+models/*.h5
+models/*.hdf5
+models/*.weights.h5
+models/*.tflite
+models/*.onnx
+
+# Data files (large)
+data/raw/**/*
+
+# Training outputs
+models/training_log.csv
+models/training_history.png
+models/confusion_matrix.png
+models/evaluation_report.json
+models/class_indices.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+
+# Streamlit
+.streamlit/secrets.toml

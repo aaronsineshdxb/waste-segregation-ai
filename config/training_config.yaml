@@ -1,0 +1,39 @@
+# Training Configuration for Waste Segregation AI
+# Copy this file and modify as needed, or pass values via CLI args
+
+# Data settings
+data_dir: "data/raw"
+model_dir: "models"
+img_size: [224, 224]
+batch_size: 32
+categories: ["recyclable", "compost", "landfill"]
+validation_split: 0.2
+seed: 42
+
+# Model settings
+base_model_name: "MobileNetV2"  # Options: MobileNetV2, EfficientNetB0, ResNet50
+use_pretrained: true  # Use ImageNet pre-trained weights
+
+# Training settings
+epochs: 30
+fine_tune_epochs: 15
+initial_lr: 0.001
+fine_tune_lr: 0.00001
+
+# Augmentation settings (applied in training script)
+# rotation_range: 20
+# width_shift_range: 0.2
+# height_shift_range: 0.2
+# shear_range: 0.2
+# zoom_range: 0.2
+# horizontal_flip: true
+# brightness_range: [0.8, 1.2]
+
+# Callbacks
+early_stopping_patience: 8
+reduce_lr_patience: 4
+reduce_lr_factor: 0.2
+min_lr: 1e-7
+
+# Fine-tuning: number of base model layers to unfreeze (from the end)
+fine_tune_unfreeze_layers: 20

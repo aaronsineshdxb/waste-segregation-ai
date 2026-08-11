@@ -1,0 +1,81 @@
+name: "Pull Request"
+description: "Submit a pull request"
+title: "[PR] "
+labels: []
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for submitting a PR! Please fill out the sections below."
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Ensure all items are checked before submitting
+      options:
+        - label: "Code follows style guidelines (black, flake8)"
+          required: true
+        - label: "Type hints added where practical"
+          required: true
+        - label: "Tests pass (or N/A for this change)"
+          required: true
+        - label: "Documentation updated if needed"
+          required: true
+        - label: "Commit messages follow Conventional Commits"
+          required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of Change
+      description: What type of change is this?
+      options:
+        - "feat: New feature"
+        - "fix: Bug fix"
+        - "docs: Documentation only"
+        - "refactor: Code restructuring"
+        - "test: Adding tests"
+        - "chore: Maintenance tasks"
+      validations:
+        required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clear and concise description of the changes
+      placeholder: "Add support for EfficientNetB0 base model with configurable fine-tuning layers..."
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Context
+      description: Why is this change needed? Link to issue if applicable.
+      placeholder: "Addresses #123 - EfficientNetB0 provides better accuracy/parameter ratio..."
+    validations:
+      required: true
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing Performed
+      description: How did you test this change?
+      placeholder: "Ran training with EfficientNetB0 for 10 epochs, achieved 85% val accuracy..."
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (if UI changes)
+      description: Add screenshots or GIFs demonstrating the change
+      placeholder: "Drag and drop screenshots here..."
+    validations:
+      required: false
+  - type: checkboxes
+    id: breaking
+    attributes:
+      label: Breaking Changes
+      description: Does this introduce any breaking changes?
+      options:
+        - label: "Yes, this is a breaking change (describe in description)"
+        - label: "No breaking changes"
+    validations:
+      required: true

@@ -1,0 +1,36 @@
+# Core ML/DL
+tensorflow>=2.15.0,<2.16.0
+keras>=3.0.0,<4.0.0
+
+# Image processing
+opencv-python>=4.9.0,<5.0.0
+Pillow>=10.0.0,<11.0.0
+
+# Data science
+numpy>=1.24.0,<2.0.0
+pandas>=2.1.0,<3.0.0
+scikit-learn>=1.3.0,<2.0.0
+scipy>=1.11.0,<2.0.0
+
+# Visualization
+matplotlib>=3.7.0,<4.0.0
+seaborn>=0.13.0,<1.0.0
+plotly>=5.17.0,<6.0.0
+
+# Web app
+streamlit>=1.28.0,<2.0.0
+
+# Utilities
+python-dotenv>=1.0.0,<2.0.0
+tqdm>=4.66.0,<5.0.0
+requests>=2.31.0,<3.0.0
+
+# Optional: Generative AI
+google-generativeai>=0.3.0,<1.0.0
+
+# Development
+pytest>=7.4.0,<8.0.0
+black>=23.0.0,<24.0.0
+flake8>=6.1.0,<7.0.0
+mypy>=1.5.0,<2.0.0
+pre-commit>=3.5.0,<4.0.0
