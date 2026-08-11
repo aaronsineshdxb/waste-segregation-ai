@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 from tensorflow import keras
-from tensorflow.keras import applications, callbacks, layers, models
+from tensorflow.keras import applications, callbacks, layers
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
@@ -497,3 +497,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
