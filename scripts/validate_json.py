@@ -5,6 +5,7 @@ import json
 import glob
 import sys
 
+
 def main():
     errors = []
     for f in glob.glob('models/*.json'):
@@ -21,6 +22,7 @@ def main():
         sys.exit(1)
     else:
         print("\nAll JSON files valid")
+
 
 if __name__ == "__main__":
     main()
