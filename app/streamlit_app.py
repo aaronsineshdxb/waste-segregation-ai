@@ -1,4 +1,3 @@
-import os
 import json
 import cv2
 import numpy as np
@@ -18,11 +17,13 @@ COLORS = {
 MODEL_PATH = Path("models/best_model.keras")
 CLASS_MAP_PATH = Path("models/class_indices.json")
 
+
 @st.cache_resource
 def load_model():
     if not MODEL_PATH.exists():
         return None
     return tf.keras.models.load_model(MODEL_PATH)
+
 
 @st.cache_data
 def load_class_map():
@@ -103,11 +104,14 @@ with col2:
         st.success(f"Prediction: {label.title()} ({confidence:.2%})")
         st.progress(float(confidence))
         st.info(get_waste_tip(label))
-        
+
         st.write("Class probabilities")
         prob_data = {k: float(v) for k, v in zip(CATEGORIES, probs)}
         st.bar_chart(prob_data)
 
 st.divider()
 st.subheader("Project Notes")
-st.write("This app is a prototype for class XII capstone work. For the final version, collect real waste images in school and retrain the model.")
+st.write(
+    "This app is a prototype for class XII capstone work. "
+    "For the final version, collect real waste images in school and retrain the model."
+)

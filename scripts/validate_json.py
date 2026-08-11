@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Validate JSON files in the repository."""
 
-import json
 import glob
+import json
 import sys
 
 
 def main():
     errors = []
-    for f in glob.glob('models/*.json'):
+    for f in glob.glob("models/*.json"):
         try:
             with open(f) as fp:
                 json.load(fp)
