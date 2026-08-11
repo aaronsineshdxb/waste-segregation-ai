@@ -361,7 +361,10 @@ class WasteClassifier:
             self.history.history["val_accuracy"], label="Validation", alpha=0.8
         )
         axes[0, 0].axvline(
-            x=self.config.epochs - 0.5, color="red", linestyle="--", label="Fine-tune start"
+            x=self.config.epochs - 0.5,
+            color="red",
+            linestyle="--",
+            label="Fine-tune start",
         )
         axes[0, 0].set_title("Model Accuracy")
         axes[0, 0].set_xlabel("Epoch")
@@ -373,7 +376,10 @@ class WasteClassifier:
         axes[0, 1].plot(self.history.history["loss"], label="Train", alpha=0.8)
         axes[0, 1].plot(self.history.history["val_loss"], label="Validation", alpha=0.8)
         axes[0, 1].axvline(
-            x=self.config.epochs - 0.5, color="red", linestyle="--", label="Fine-tune start"
+            x=self.config.epochs - 0.5,
+            color="red",
+            linestyle="--",
+            label="Fine-tune start",
         )
         axes[0, 1].set_title("Model Loss")
         axes[0, 1].set_xlabel("Epoch")
@@ -497,4 +503,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

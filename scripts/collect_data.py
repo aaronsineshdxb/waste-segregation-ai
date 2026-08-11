@@ -6,9 +6,9 @@ Collects real waste images from webcam for training the model.
 Images are saved to data/raw/<category>/ with timestamps.
 """
 
-import time
 from datetime import datetime
 from pathlib import Path
+import time
 
 import cv2
 
