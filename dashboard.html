@@ -103,7 +103,29 @@
             align-items: center;
             justify-content: space-between;
             height: 100%;
+            gap: var(--space-md);
         }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface);
+            color: var(--fg);
+            cursor: pointer;
+            transition: background var(--transition), border-color var(--transition);
+        }
+        .theme-toggle:hover { background: var(--bg-elevated); border-color: var(--accent); }
+        .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .theme-toggle svg { width: 20px; height: 20px; }
+        .theme-toggle .sun { display: none; }
+        .theme-toggle .moon { display: block; }
+        html[data-theme="light"] .theme-toggle .sun { display: block; }
+        html[data-theme="light"] .theme-toggle .moon { display: none; }
 
         .logo {
             display: flex;
@@ -429,6 +451,10 @@
                 <a href="#" class="nav-link">Data</a>
                 <a href="#" class="nav-link">Model</a>
             </nav>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" type="button">
+                <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
         </div>
     </header>
 
@@ -746,6 +772,26 @@
             renderPredictions();
             renderMetrics();
             renderProgress();
+            initThemeToggle();
+        }
+
+        // ===== Theme Toggle =====
+        function initThemeToggle() {
+            const btn = document.getElementById('theme-toggle');
+            if (!btn) return;
+
+            const html = document.documentElement;
+            const stored = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initialTheme = stored || (prefersDark ? 'dark' : 'light');
+            html.setAttribute('data-theme', initialTheme);
+
+            btn.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+            });
         }
 
         if (document.readyState === 'loading') {

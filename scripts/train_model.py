@@ -10,23 +10,23 @@ Usage:
     python scripts/train_model.py --epochs 30 --batch-size 32 --base-model EfficientNetB0
 """
 
-import os
-import json
 import argparse
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers, models, callbacks, applications
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import json
 from pathlib import Path
-import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix
-import seaborn as sns
+
+import numpy as np
 import yaml
+from tensorflow import keras
+from tensorflow.keras import applications, callbacks, layers
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 class TrainingConfig:
     """Configuration for training."""
+
     def __init__(self, config_path=None):
         # Defaults
         self.data_dir = "data/raw"
@@ -70,7 +70,7 @@ class WasteClassifier:
     def create_data_generators(self):
         """Create training and validation data generators with augmentation."""
         train_datagen = ImageDataGenerator(
-            rescale=1./255,
+            rescale=1.0 / 255,
             rotation_range=20,
             width_shift_range=0.2,
             height_shift_range=0.2,
@@ -78,33 +78,33 @@ class WasteClassifier:
             zoom_range=0.2,
             horizontal_flip=True,
             brightness_range=[0.8, 1.2],
-            fill_mode='nearest',
-            validation_split=self.config.validation_split
+            fill_mode="nearest",
+            validation_split=self.config.validation_split,
         )
 
         val_datagen = ImageDataGenerator(
-            rescale=1./255,
-            validation_split=self.config.validation_split
+            rescale=1.0 / 255,
+            validation_split=self.config.validation_split,
         )
 
         self.train_gen = train_datagen.flow_from_directory(
             self.data_dir,
             target_size=self.img_size,
             batch_size=self.batch_size,
-            class_mode='categorical',
-            subset='training',
+            class_mode="categorical",
+            subset="training",
             shuffle=True,
-            seed=self.config.seed
+            seed=self.config.seed,
         )
 
         self.val_gen = val_datagen.flow_from_directory(
             self.data_dir,
             target_size=self.img_size,
             batch_size=self.batch_size,
-            class_mode='categorical',
-            subset='validation',
+            class_mode="categorical",
+            subset="validation",
             shuffle=False,
-            seed=self.config.seed
+            seed=self.config.seed,
         )
 
         print(f"Training samples: {self.train_gen.samples}")
@@ -119,25 +119,25 @@ class WasteClassifier:
 
     def build_model(self):
         """Build transfer learning model using pre-trained base."""
-        weights = 'imagenet' if self.config.use_pretrained else None
+        weights = "imagenet" if self.config.use_pretrained else None
 
         if self.config.base_model_name == "MobileNetV2":
             base_model = applications.MobileNetV2(
                 weights=weights,
                 include_top=False,
-                input_shape=(*self.img_size, 3)
+                input_shape=(*self.img_size, 3),
             )
         elif self.config.base_model_name == "EfficientNetB0":
             base_model = applications.EfficientNetB0(
                 weights=weights,
                 include_top=False,
-                input_shape=(*self.img_size, 3)
+                input_shape=(*self.img_size, 3),
             )
         elif self.config.base_model_name == "ResNet50":
             base_model = applications.ResNet50(
                 weights=weights,
                 include_top=False,
-                input_shape=(*self.img_size, 3)
+                input_shape=(*self.img_size, 3),
             )
         else:
             raise ValueError(f"Unsupported base model: {self.config.base_model_name}")
@@ -151,20 +151,22 @@ class WasteClassifier:
         x = layers.GlobalAveragePooling2D()(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.3)(x)
-        x = layers.Dense(256, activation='relu')(x)
+        x = layers.Dense(256, activation="relu")(x)
         x = layers.BatchNormalization()(x)
         x = layers.Dropout(0.2)(x)
-        outputs = layers.Dense(self.num_classes, activation='softmax')(x)
+        outputs = layers.Dense(self.num_classes, activation="softmax")(x)
 
         self.model = keras.Model(inputs, outputs)
 
         self.model.compile(
             optimizer=keras.optimizers.Adam(learning_rate=self.config.initial_lr),
-            loss='categorical_crossentropy',
-            metrics=['accuracy',
-                     keras.metrics.Precision(name='precision'),
-                     keras.metrics.Recall(name='recall'),
-                     keras.metrics.AUC(name='auc')]
+            loss="categorical_crossentropy",
+            metrics=[
+                "accuracy",
+                keras.metrics.Precision(name="precision"),
+                keras.metrics.Recall(name="recall"),
+                keras.metrics.AUC(name="auc"),
+            ],
         )
 
         print(self.model.summary())
@@ -175,30 +177,30 @@ class WasteClassifier:
         return [
             callbacks.ModelCheckpoint(
                 self.model_dir / "best_model.keras",
-                monitor='val_accuracy',
+                monitor="val_accuracy",
                 save_best_only=True,
-                mode='max',
-                verbose=1
+                mode="max",
+                verbose=1,
             ),
             callbacks.EarlyStopping(
-                monitor='val_accuracy',
+                monitor="val_accuracy",
                 patience=8,
                 restore_best_weights=True,
-                verbose=1
+                verbose=1,
             ),
             callbacks.ReduceLROnPlateau(
-                monitor='val_loss',
+                monitor="val_loss",
                 factor=0.2,
                 patience=4,
                 min_lr=1e-7,
-                verbose=1
+                verbose=1,
             ),
             callbacks.CSVLogger(self.model_dir / "training_log.csv"),
             callbacks.TensorBoard(
-                log_dir=self.model_dir / "logs",
+                log_dir=str(self.model_dir / "logs"),
                 histogram_freq=1,
-                write_graph=True
-            )
+                write_graph=True,
+            ),
         ]
 
     def train(self):
@@ -212,22 +214,22 @@ class WasteClassifier:
         cb = self.get_callbacks()
 
         # Phase 1: Train top layers only
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f"PHASE 1: Training top layers (frozen base) - {self.config.epochs} epochs")
-        print("="*60)
+        print("=" * 60)
 
         self.history = self.model.fit(
             self.train_gen,
             epochs=self.config.epochs,
             validation_data=self.val_gen,
             callbacks=cb,
-            verbose=1
+            verbose=1,
         )
 
         # Phase 2: Fine-tuning
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f"PHASE 2: Fine-tuning (unfreeze base) - {self.config.fine_tune_epochs} epochs")
-        print("="*60)
+        print("=" * 60)
 
         # Unfreeze base model
         self.model.layers[1].trainable = True
@@ -241,11 +243,13 @@ class WasteClassifier:
         # Recompile with lower learning rate
         self.model.compile(
             optimizer=keras.optimizers.Adam(learning_rate=self.config.fine_tune_lr),
-            loss='categorical_crossentropy',
-            metrics=['accuracy',
-                     keras.metrics.Precision(name='precision'),
-                     keras.metrics.Recall(name='recall'),
-                     keras.metrics.AUC(name='auc')]
+            loss="categorical_crossentropy",
+            metrics=[
+                "accuracy",
+                keras.metrics.Precision(name="precision"),
+                keras.metrics.Recall(name="recall"),
+                keras.metrics.AUC(name="auc"),
+            ],
         )
 
         # Continue training
@@ -255,7 +259,7 @@ class WasteClassifier:
             initial_epoch=self.config.epochs,
             validation_data=self.val_gen,
             callbacks=cb,
-            verbose=1
+            verbose=1,
         )
 
         # Combine histories
@@ -267,11 +271,11 @@ class WasteClassifier:
         print(f"\nModel saved to {self.model_dir / 'final_model.keras'}")
 
         # Save class indices
-        with open(self.model_dir / "class_indices.json", 'w') as f:
+        with open(self.model_dir / "class_indices.json", "w") as f:
             json.dump(self.train_gen.class_indices, f, indent=2)
 
         # Save config
-        with open(self.model_dir / "training_config.json", 'w') as f:
+        with open(self.model_dir / "training_config.json", "w") as f:
             json.dump(vars(self.config), f, indent=2, default=str)
 
         return self.history
@@ -290,9 +294,9 @@ class WasteClassifier:
                 print(f"Model not found at {model_path}")
                 return None
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("EVALUATION")
-        print("="*60)
+        print("=" * 60)
 
         # Get predictions
         self.val_gen.reset()
@@ -308,18 +312,26 @@ class WasteClassifier:
         # Confusion matrix
         cm = confusion_matrix(y_true, y_pred)
         plt.figure(figsize=(8, 6))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                   xticklabels=self.categories, yticklabels=self.categories)
-        plt.title('Confusion Matrix')
-        plt.ylabel('True Label')
-        plt.xlabel('Predicted Label')
+        sns.heatmap(
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            xticklabels=self.categories,
+            yticklabels=self.categories,
+        )
+        plt.title("Confusion Matrix")
+        plt.ylabel("True Label")
+        plt.xlabel("Predicted Label")
         plt.tight_layout()
         plt.savefig(self.model_dir / "confusion_matrix.png", dpi=300)
         plt.close()
 
         # Per-class metrics
-        report = classification_report(y_true, y_pred, target_names=self.categories, output_dict=True)
-        with open(self.model_dir / "evaluation_report.json", 'w') as f:
+        report = classification_report(
+            y_true, y_pred, target_names=self.categories, output_dict=True
+        )
+        with open(self.model_dir / "evaluation_report.json", "w") as f:
             json.dump(report, f, indent=2)
 
         # Print summary
@@ -338,69 +350,79 @@ class WasteClassifier:
         fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 
         # Accuracy
-        axes[0, 0].plot(self.history.history['accuracy'], label='Train', alpha=0.8)
-        axes[0, 0].plot(self.history.history['val_accuracy'], label='Validation', alpha=0.8)
-        axes[0, 0].axvline(x=self.config.epochs - 0.5, color='red', linestyle='--', label='Fine-tune start')
-        axes[0, 0].set_title('Model Accuracy')
-        axes[0, 0].set_xlabel('Epoch')
-        axes[0, 0].set_ylabel('Accuracy')
+        axes[0, 0].plot(self.history.history["accuracy"], label="Train", alpha=0.8)
+        axes[0, 0].plot(self.history.history["val_accuracy"], label="Validation", alpha=0.8)
+        axes[0, 0].axvline(
+            x=self.config.epochs - 0.5,
+            color="red",
+            linestyle="--",
+            label="Fine-tune start",
+        )
+        axes[0, 0].set_title("Model Accuracy")
+        axes[0, 0].set_xlabel("Epoch")
+        axes[0, 0].set_ylabel("Accuracy")
         axes[0, 0].legend()
         axes[0, 0].grid(True, alpha=0.3)
 
         # Loss
-        axes[0, 1].plot(self.history.history['loss'], label='Train', alpha=0.8)
-        axes[0, 1].plot(self.history.history['val_loss'], label='Validation', alpha=0.8)
-        axes[0, 1].axvline(x=self.config.epochs - 0.5, color='red', linestyle='--', label='Fine-tune start')
-        axes[0, 1].set_title('Model Loss')
-        axes[0, 1].set_xlabel('Epoch')
-        axes[0, 1].set_ylabel('Loss')
+        axes[0, 1].plot(self.history.history["loss"], label="Train", alpha=0.8)
+        axes[0, 1].plot(self.history.history["val_loss"], label="Validation", alpha=0.8)
+        axes[0, 1].axvline(
+            x=self.config.epochs - 0.5,
+            color="red",
+            linestyle="--",
+            label="Fine-tune start",
+        )
+        axes[0, 1].set_title("Model Loss")
+        axes[0, 1].set_xlabel("Epoch")
+        axes[0, 1].set_ylabel("Loss")
         axes[0, 1].legend()
         axes[0, 1].grid(True, alpha=0.3)
 
         # Precision
-        if 'precision' in self.history.history:
-            axes[0, 2].plot(self.history.history['precision'], label='Train', alpha=0.8)
-            axes[0, 2].plot(self.history.history['val_precision'], label='Validation', alpha=0.8)
-            axes[0, 2].axvline(x=self.config.epochs - 0.5, color='red', linestyle='--')
-            axes[0, 2].set_title('Precision')
-            axes[0, 2].set_xlabel('Epoch')
-            axes[0, 2].set_ylabel('Precision')
+        if "precision" in self.history.history:
+            axes[0, 2].plot(self.history.history["precision"], label="Train", alpha=0.8)
+            axes[0, 2].plot(self.history.history["val_precision"], label="Validation", alpha=0.8)
+            axes[0, 2].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
+            axes[0, 2].set_title("Precision")
+            axes[0, 2].set_xlabel("Epoch")
+            axes[0, 2].set_ylabel("Precision")
             axes[0, 2].legend()
             axes[0, 2].grid(True, alpha=0.3)
 
         # Recall
-        if 'recall' in self.history.history:
-            axes[1, 0].plot(self.history.history['recall'], label='Train', alpha=0.8)
-            axes[1, 0].plot(self.history.history['val_recall'], label='Validation', alpha=0.8)
-            axes[1, 0].axvline(x=self.config.epochs - 0.5, color='red', linestyle='--')
-            axes[1, 0].set_title('Recall')
-            axes[1, 0].set_xlabel('Epoch')
-            axes[1, 0].set_ylabel('Recall')
+        if "recall" in self.history.history:
+            axes[1, 0].plot(self.history.history["recall"], label="Train", alpha=0.8)
+            axes[1, 0].plot(self.history.history["val_recall"], label="Validation", alpha=0.8)
+            axes[1, 0].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
+            axes[1, 0].set_title("Recall")
+            axes[1, 0].set_xlabel("Epoch")
+            axes[1, 0].set_ylabel("Recall")
             axes[1, 0].legend()
             axes[1, 0].grid(True, alpha=0.3)
 
         # AUC
-        if 'auc' in self.history.history:
-            axes[1, 1].plot(self.history.history['auc'], label='Train', alpha=0.8)
-            axes[1, 1].plot(self.history.history['val_auc'], label='Validation', alpha=0.8)
-            axes[1, 1].axvline(x=self.config.epochs - 0.5, color='red', linestyle='--')
-            axes[1, 1].set_title('AUC')
-            axes[1, 1].set_xlabel('Epoch')
-            axes[1, 1].set_ylabel('AUC')
+        if "auc" in self.history.history:
+            axes[1, 1].plot(self.history.history["auc"], label="Train", alpha=0.8)
+            axes[1, 1].plot(self.history.history["val_auc"], label="Validation", alpha=0.8)
+            axes[1, 1].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
+            axes[1, 1].set_title("AUC")
+            axes[1, 1].set_xlabel("Epoch")
+            axes[1, 1].set_ylabel("AUC")
             axes[1, 1].legend()
             axes[1, 1].grid(True, alpha=0.3)
 
         # Learning rate (if available)
-        if 'lr' in self.history.history:
-            axes[1, 2].plot(self.history.history['lr'], alpha=0.8)
-            axes[1, 2].axvline(x=self.config.epochs - 0.5, color='red', linestyle='--')
-            axes[1, 2].set_title('Learning Rate')
-            axes[1, 2].set_xlabel('Epoch')
-            axes[1, 2].set_ylabel('LR')
-            axes[1, 2].set_yscale('log')
+        if "lr" in self.history.history:
+            axes[1, 2].plot(self.history.history["lr"], alpha=0.8)
+            axes[1, 2].axvline(x=self.config.epochs - 0.5, color="red", linestyle="--")
+            axes[1, 2].set_title("Learning Rate")
+            axes[1, 2].set_xlabel("Epoch")
+            axes[1, 2].set_ylabel("LR")
+            axes[1, 2].set_yscale("log")
             axes[1, 2].grid(True, alpha=0.3)
         else:
-            axes[1, 2].axis('off')
+            axes[1, 2].axis("off")
 
         plt.tight_layout()
         plt.savefig(self.model_dir / "training_history.png", dpi=300)
@@ -416,8 +438,11 @@ def main():
     parser.add_argument("--epochs", type=int, default=30, help="Initial training epochs")
     parser.add_argument("--fine-tune-epochs", type=int, default=15, help="Fine-tuning epochs")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
-    parser.add_argument("--base-model", default="MobileNetV2",
-                        choices=["MobileNetV2", "EfficientNetB0", "ResNet50"])
+    parser.add_argument(
+        "--base-model",
+        default="MobileNetV2",
+        choices=["MobileNetV2", "EfficientNetB0", "ResNet50"],
+    )
     parser.add_argument("--no-pretrained", action="store_true", help="Don't use ImageNet weights")
     parser.add_argument("--eval-only", action="store_true", help="Only evaluate existing model")
     args = parser.parse_args()

@@ -6,12 +6,11 @@ Collects real waste images from webcam for training the model.
 Images are saved to data/raw/<category>/ with timestamps.
 """
 
-import cv2
-import os
-import time
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+import time
 
+import cv2
 
 CATEGORIES = ["recyclable", "compost", "landfill"]
 DATA_DIR = Path("data/raw")
@@ -60,16 +59,37 @@ def collect_images(category, num_images=30, delay=1.0):
 
         # Show preview with overlay
         display = frame.copy()
-        cv2.putText(display, f"Category: {category}", (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        cv2.putText(display, f"Captured: {count}/{num_images}", (10, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        cv2.putText(display, "SPACE: capture  |  q: quit", (10, 90),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        cv2.putText(
+            display,
+            f"Category: {category}",
+            (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (0, 255, 0),
+            2,
+        )
+        cv2.putText(
+            display,
+            f"Captured: {count}/{num_images}",
+            (10, 60),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.7,
+            (0, 255, 0),
+            2,
+        )
+        cv2.putText(
+            display,
+            "SPACE: capture  |  q: quit",
+            (10, 90),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 255, 255),
+            1,
+        )
         cv2.imshow("Data Collection", display)
 
         key = cv2.waitKey(1) & 0xFF
-        if key == ord(' '):  # Space to capture
+        if key == ord(" "):  # Space to capture
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             idx = start_idx + count
             filename = f"{category}_{timestamp}_{idx:04d}.jpg"
@@ -82,7 +102,7 @@ def collect_images(category, num_images=30, delay=1.0):
             count += 1
             time.sleep(delay)
 
-        elif key == ord('q'):
+        elif key == ord("q"):
             print(f"Stopped early. Captured {count} images.")
             break
 
@@ -93,13 +113,13 @@ def collect_images(category, num_images=30, delay=1.0):
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser(description="Collect waste images for training")
-    parser.add_argument("--category", choices=CATEGORIES + ["all"],
-                        default="all", help="Category to collect")
-    parser.add_argument("--num", type=int, default=30,
-                        help="Number of images per category")
-    parser.add_argument("--delay", type=float, default=1.0,
-                        help="Delay between captures (seconds)")
+    parser.add_argument(
+        "--category", choices=CATEGORIES + ["all"], default="all", help="Category to collect"
+    )
+    parser.add_argument("--num", type=int, default=30, help="Number of images per category")
+    parser.add_argument("--delay", type=float, default=1.0, help="Delay between captures (seconds)")
     args = parser.parse_args()
 
     setup_directories()
