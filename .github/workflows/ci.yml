@@ -38,7 +38,12 @@ jobs:
 
       - name: Verify imports
         run: |
-          python -c "import scripts.train_model; import app.streamlit_app; import dashboard.dashboard; print('All imports OK')"
+          python -c "import scripts.train_model; print('scripts.train_model OK')"
+          python -c "import scripts.collect_data; print('scripts.collect_data OK')"
+          python -c "import scripts.validate_json; print('scripts.validate_json OK')"
+          # Streamlit apps have top-level execution, check syntax only
+          python -m py_compile app/streamlit_app.py && echo "app/streamlit_app.py syntax OK"
+          python -m py_compile dashboard/dashboard.py && echo "dashboard/dashboard.py syntax OK"
 
   test-training-script:
     runs-on: ubuntu-latest
